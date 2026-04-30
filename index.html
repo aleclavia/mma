@@ -617,6 +617,20 @@ footer{
   .home-stats .stat-item{padding:24px 20px;}
   .about-course{grid-template-columns:1fr;margin:24px;}
 }
+  .planet-render video {
+    display: block;
+    filter: brightness(1.1) contrast(1.05);
+    background: var(--black);
+}
+
+/* Add a subtle blue glow over the videos to match the UI */
+.planet-render::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+    pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -841,16 +855,24 @@ function initSolar() {
     grid.innerHTML = planets.map(p => `
         <div class="planet-card">
             <div class="planet-render">
-                <div class="blender-tag">EEVEE</div>
-                <div class="ph">
-                    <div class="orb orb-${p.class}"></div>
-                    <div class="ph-label">Awaiting Render</div>
-                </div>
+                <div class="blender-tag">RENDER</div>
+                <!-- Video replaces the orb div -->
+                <video 
+                    src="planets/${p.class}.mp4" 
+                    autoplay 
+                    muted 
+                    loop 
+                    playsinline 
+                    style="width: 100%; height: 100%; object-fit: cover;">
+                </video>
             </div>
             <div class="planet-info">
                 <div class="planet-name">${p.name}</div>
                 <div class="planet-type">${p.type}</div>
                 <p class="planet-desc">${p.desc}</p>
+                <div class="planet-facts">
+                    <span class="planet-fact">SOURCE: planets/${p.class}.mp4</span>
+                </div>
             </div>
         </div>
     `).join('');
