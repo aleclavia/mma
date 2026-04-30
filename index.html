@@ -779,10 +779,6 @@ footer{
           </div>
         </div>
       </div>
-      <div class="vid-input">
-        <input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=...">
-        <button onclick="updateVideo()">Update Link</button>
-      </div>
     </div>
     
     <div class="week-cards">
@@ -815,18 +811,18 @@ footer{
 <script>
 // --- DATA CONFIGURATION ---
 const weeksData = [
-    { title: "Project Foundations", obj: "Setting up workspace and initial frame extraction.", tags: ["Setup", "Reference", "Line Work"] },
-    { title: "Motion Timing", obj: "Focusing on 1s to 2s of fluid motion.", tags: ["Keyframes", "Timing"] },
-    { title: "Line Weight", obj: "Adding variation to brush strokes for depth.", tags: ["Brushes", "Detail"] },
-    { title: "Color Blocking", obj: "Applying flat colors to rotoscoped shapes.", tags: ["Palette", "Fills"] },
-    { title: "3D Basics", obj: "Modeling base planets in Blender.", tags: ["Blender", "Geometry"] },
-    { title: "Texture & Light", obj: "Applying shaders to the solar system.", tags: ["Texturing", "Nodes"] },
-    { title: "Shadow Mapping", obj: "Adding contact shadows to characters.", tags: ["Shadows", "Form"] },
-    { title: "Hybrid Backgrounds", obj: "Placing rotoscoped assets into 3D scenes.", tags: ["Compositing", "Z-Depth"] },
-    { title: "Atmospherics", obj: "Adding glow and particle effects.", tags: ["VFX", "Glow"] },
-    { title: "Smear Frames", obj: "Creating stylized motion blur manually.", tags: ["Style", "Action"] },
-    { title: "Sound Design", obj: "Syncing audio cues with animation hits.", tags: ["Audio", "Sync"] },
-    { title: "Final Export", obj: "Mastering the 60s sequence at 4K.", tags: ["Rendering", "H.264"] }
+    { title: "Project Foundations", ytLink: "https://youtu.be/A_rzEFX2gDA", obj: "Setting up workspace and initial frame extraction.", tags: ["Setup", "Reference", "Line Work"] },
+    { title: "Motion Timing", ytLink: "yourytlink", obj: "Focusing on 1s to 2s of fluid motion.", tags: ["Keyframes", "Timing"] },
+    { title: "Line Weight", ytLink: "yourytlink", obj: "Adding variation to brush strokes for depth.", tags: ["Brushes", "Detail"] },
+    { title: "Color Blocking", ytLink: "yourytlink", obj: "Applying flat colors to rotoscoped shapes.", tags: ["Palette", "Fills"] },
+    { title: "3D Basics", ytLink: "yourytlink", obj: "Modeling base planets in Blender.", tags: ["Blender", "Geometry"] },
+    { title: "Texture & Light", ytLink: "yourytlink", obj: "Applying shaders to the solar system.", tags: ["Texturing", "Nodes"] },
+    { title: "Shadow Mapping", ytLink: "yourytlink", obj: "Adding contact shadows to characters.", tags: ["Shadows", "Form"] },
+    { title: "Hybrid Backgrounds", ytLink: "yourytlink", obj: "Placing rotoscoped assets into 3D scenes.", tags: ["Compositing", "Z-Depth"] },
+    { title: "Atmospherics", ytLink: "yourytlink", obj: "Adding glow and particle effects.", tags: ["VFX", "Glow"] },
+    { title: "Smear Frames", ytLink: "yourytlink", obj: "Creating stylized motion blur manually.", tags: ["Style", "Action"] },
+    { title: "Sound Design", ytLink: "yourytlink", obj: "Syncing audio cues with animation hits.", tags: ["Audio", "Sync"] },
+    { title: "Final Export", ytLink: "yourytlink", obj: "Mastering the 60s sequence at 4K.", tags: ["Rendering", "H.264"] }
 ];
 
 const planets = [
@@ -926,12 +922,32 @@ function shiftWeek(dir) {
 
 function updateWeekContent() {
     const data = weeksData[currentWeek-1];
+    
+    // Update Text Content
     document.getElementById('wkLabel').innerText = `Week ${currentWeek < 10 ? '0'+currentWeek : currentWeek}`;
     document.getElementById('wkTitle').innerHTML = `${data.title.split(' ')[0]} <span class="acc">${data.title.split(' ').slice(1).join(' ')}</span>`;
     document.getElementById('wkObjective').innerText = data.obj;
     document.getElementById('wkTags').innerHTML = data.tags.map(t => `<span class="wtag">${t}</span>`).join('');
     
-    // Progress UI
+    // --- AUTOMATIC VIDEO EMBEDDING ---
+    const vidArea = document.getElementById('vidArea');
+    const url = data.ytLink;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+
+    if (match && match[2].length == 11) {
+        // If a real link is found in the script
+        vidArea.innerHTML = `<iframe src="https://www.youtube.com/embed/${match[2]}" allowfullscreen></iframe>`;
+    } else {
+        // If it still says "yourytlink"
+        vidArea.innerHTML = `
+            <div class="vid-ph">
+                <div class="play-ring">▶</div>
+                <p>WEEK ${currentWeek} VIDEO PENDING<br>EDIT 'ytLink' IN THE SCRIPT TO EMBED</p>
+            </div>`;
+    }
+
+    // Update Progress UI (The dots/boxes)
     document.querySelectorAll('.wg-box').forEach((box, idx) => {
         box.className = 'wg-box';
         if(idx + 1 < currentWeek) box.classList.add('done');
@@ -940,13 +956,6 @@ function updateWeekContent() {
 
     document.getElementById('prevBtn').disabled = currentWeek === 1;
     document.getElementById('nextBtn').disabled = currentWeek === 12;
-
-    // Reset Video Area
-    document.getElementById('vidArea').innerHTML = `
-        <div class="vid-ph">
-            <div class="play-ring">▶</div>
-            <p>PASTE A YOUTUBE LINK BELOW<br>TO EMBED WEEK ${currentWeek} PROGRESS</p>
-        </div>`;
 }
 
 function updateVideo() {
