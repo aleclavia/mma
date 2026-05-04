@@ -826,14 +826,14 @@ const weeksData = [
 ];
 
 const planets = [
-    { name: "Mercury", type: "Terrestrial", class: "mercury", desc: "Smallest planet, closest to the Sun." },
-    { name: "Venus", type: "Terrestrial", class: "venus", desc: "Thick atmosphere, extreme heat." },
-    { name: "Earth", type: "Terrestrial", class: "earth", desc: "Our home, the blue marble." },
-    { name: "Mars", type: "Terrestrial", class: "mars", desc: "The red planet, dusty and cold." },
-    { name: "Jupiter", type: "Gas Giant", class: "jupiter", desc: "Largest planet with a Great Red Spot." },
-    { name: "Saturn", type: "Gas Giant", class: "saturn", desc: "Famous for its spectacular ring system." },
-    { name: "Uranus", type: "Ice Giant", class: "uranus", desc: "An ice giant that rotates on its side." },
-    { name: "Neptune", type: "Ice Giant", class: "neptune", desc: "Dark, cold, and whipped by winds." }
+    { name: "Mercury", type: "Terrestrial", class: "mercury", orbit: 0.24, desc: "Smallest planet, closest to the Sun." },
+    { name: "Venus", type: "Terrestrial", class: "venus", orbit: 0.62, desc: "Thick atmosphere, extreme heat." },
+    { name: "Earth", type: "Terrestrial", class: "earth", orbit: 1.0, desc: "Our home, the blue marble." },
+    { name: "Mars", type: "Terrestrial", class: "mars", orbit: 1.88, desc: "The red planet, dusty and cold." },
+    { name: "Jupiter", type: "Gas Giant", class: "jupiter", orbit: 11.86, desc: "Largest planet with a Great Red Spot." },
+    { name: "Saturn", type: "Gas Giant", class: "saturn", orbit: 29.46, desc: "Famous for its spectacular ring system." },
+    { name: "Uranus", type: "Ice Giant", class: "uranus", orbit: 84.01, desc: "An ice giant that rotates on its side." },
+    { name: "Neptune", type: "Ice Giant", class: "neptune", orbit: 164.79, desc: "Dark, cold, and whipped by winds." }
 ];
 
 let currentWeek = 1;
@@ -848,30 +848,42 @@ window.onload = () => {
 
 function initSolar() {
     const grid = document.getElementById('planetsGrid');
-    grid.innerHTML = planets.map(p => `
+    grid.innerHTML = planets.map((p, index) => `
         <div class="planet-card">
             <div class="planet-render">
                 <div class="blender-tag">RENDER</div>
-                <!-- Video replaces the orb div -->
-                <video 
-                    src="planets/${p.class}.mp4" 
-                    autoplay 
-                    muted 
-                    loop 
-                    playsinline 
-                    style="width: 100%; height: 100%; object-fit: cover;">
+                <video src="planets/${p.class}.mp4" autoplay muted loop playsinline 
+                       style="width: 100%; height: 100%; object-fit: cover;">
                 </video>
             </div>
             <div class="planet-info">
                 <div class="planet-name">${p.name}</div>
                 <div class="planet-type">${p.type}</div>
-                <p class="planet-desc">${p.desc}</p>
+                
+                <div style="margin-top:15px; padding:10px; background:rgba(0,0,0,0.3); border:1px solid var(--dim);">
+                    <div class="ph-label" style="margin-bottom:8px;">Age Calculator</div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="number" placeholder="Earth Years" 
+                               oninput="calcAge(this, ${p.orbit}, 'res-${index}')"
+                               style="width:70px; background:var(--black); border:1px solid var(--steel); color:var(--white); font-family:'Share Tech Mono'; padding:4px;">
+                        <span id="res-${index}" style="font-family:'Share Tech Mono'; font-size:0.7rem; color:var(--cyan);">0 ${p.name} yrs</span>
+                    </div>
+                </div>
+
+                <p class="planet-desc" style="margin-top:15px;">${p.desc}</p>
                 <div class="planet-facts">
-                    <span class="planet-fact">SOURCE: planets/${p.class}.mp4</span>
+                    <span class="planet-fact">ORBIT: ${p.orbit} Earth Yrs</span>
                 </div>
             </div>
         </div>
     `).join('');
+}
+
+// Add this helper function below initSolar
+function calcAge(input, orbit, resultId) {
+    const earthYears = parseFloat(input.value) || 0;
+    const planetAge = (earthYears / orbit).toFixed(2);
+    document.getElementById(resultId).innerText = `${planetAge} yrs`;
 }
 
 function initWeekGrid() {
